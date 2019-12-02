@@ -271,3 +271,8 @@ void calcAlpha(inout XSLighting i)
 // 	return saturate(lineMask);
 // }
 //
+
+half2 scrollSpeed(half2 scale, half basis) {
+    half t = _Time.y * basis;
+    return half2(t * scale.x, t * scale.y);
+}

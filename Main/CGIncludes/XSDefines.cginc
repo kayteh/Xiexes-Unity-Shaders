@@ -137,6 +137,7 @@ UNITY_DECLARE_TEX2D_NOSAMPLER(_MetallicGlossMap); half4 _MetallicGlossMap_ST;
 UNITY_DECLARE_TEX2D_NOSAMPLER(_ReflectivityMask); half4 _ReflectivityMask_ST;
 UNITY_DECLARE_TEX2D_NOSAMPLER(_ThicknessMap); half4 _ThicknessMap_ST;
 UNITY_DECLARE_TEX2D_NOSAMPLER(_EmissionMap); half4 _EmissionMap_ST;
+UNITY_DECLARE_TEX2D_NOSAMPLER(_EmissionScaleTex); half4 _EmissionScaleTex_ST;
 UNITY_DECLARE_TEX2D_NOSAMPLER(_RampSelectionMask);
 sampler2D _OcclusionMap; half4 _OcclusionMap_ST;
 sampler2D _OutlineMask;
@@ -147,6 +148,8 @@ samplerCUBE _BakedCubemap;
 half4 _Color, _ShadowRim, 
     _OutlineColor, _SSColor, _OcclusionColor,
     _EmissionColor, _MatcapTint, _RimColor;
+
+half3 _EmissionSpeed;
 
 half _Cutoff;
 half _EmissionToDiffuse, _ScaleWithLightSensitivity;

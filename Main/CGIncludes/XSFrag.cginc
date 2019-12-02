@@ -1,3 +1,4 @@
+
 float4 frag (
     #if defined(Geometry)
         g2f i
@@ -43,8 +44,19 @@ float4 frag (
     o.thickness = UNITY_SAMPLE_TEX2D_SAMPLER(_ThicknessMap, _MainTex, t.thicknessMapUV);
     o.occlusion = tex2D(_OcclusionMap, t.occlusionUV);
     o.reflectivityMask = UNITY_SAMPLE_TEX2D_SAMPLER(_ReflectivityMask, _MainTex, t.reflectivityMaskUV) * _Reflectivity;
-    o.emissionMap = UNITY_SAMPLE_TEX2D_SAMPLER(_EmissionMap, _MainTex, t.emissionMapUV) * _EmissionColor;
     o.rampMask = UNITY_SAMPLE_TEX2D_SAMPLER(_RampSelectionMask, _MainTex, i.uv); // This texture doesn't need to ever be on a second uv channel, and doesn't need tiling, convince me otherwise.
+
+    #if defined(OKANO_RAVE)
+        half2 emissionMapScrolledUV = t.emissionMapUV + scrollSpeed(_EmissionSpeed.xy, _EmissionSpeed.z);
+        half4 emissionScale = UNITY_SAMPLE_TEX2D_SAMPLER(_EmissionScaleTex, _MainTex, t.albedoUV);
+        half4 emissionMap = UNITY_SAMPLE_TEX2D_SAMPLER(_EmissionMap, _MainTex, emissionMapScrolledUV);
+        o.emissionMap = (emissionMap * _EmissionColor) * emissionMap.a * emissionScale.r;
+    #elif defined(OKANO_SPARKLE)
+        half4 emissionMap = UNITY_SAMPLE_TEX2D_SAMPLER(_EmissionMap, _MainTex, t.emissionMapUV) * _EmissionColor;
+        o.emissionMap = EffectProcMain(t.emissionMapUV, emissionMap);
+    #else
+        o.emissionMap = UNITY_SAMPLE_TEX2D_SAMPLER(_EmissionMap, _MainTex, t.emissionMapUV) * _EmissionColor;
+    #endif
 
     o.diffuseColor = o.albedo.rgb; //Store this to separate the texture color and diffuse color for later.
     o.attenuation = attenuation;

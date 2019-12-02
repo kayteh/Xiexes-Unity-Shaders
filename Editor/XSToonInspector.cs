@@ -42,9 +42,11 @@ public class XSToonInspector : ShaderGUI
     MaterialProperty _ClearcoatStrength = null;
     MaterialProperty _ClearcoatSmoothness = null;
     MaterialProperty _EmissionMap = null;
+    MaterialProperty _EmissionScaleTex = null;
     MaterialProperty _ScaleWithLight = null;
     MaterialProperty _ScaleWithLightSensitivity = null;
     MaterialProperty _EmissionColor = null;
+    MaterialProperty _EmissionSpeed = null;
     MaterialProperty _EmissionToDiffuse = null;
     MaterialProperty _RimColor = null;
     MaterialProperty _RimIntensity = null;
@@ -99,6 +101,12 @@ public class XSToonInspector : ShaderGUI
     MaterialProperty _ShadowSharpness = null;
     MaterialProperty _AdvMode = null;
 
+    MaterialProperty _EmissionNoiseSizeCoeff = null;
+    MaterialProperty _EmissionNoiseDensity = null;
+    MaterialProperty _EmissionSparkleSpeed = null;
+    MaterialProperty _EmissionGreyShift = null;
+
+
     //Material Properties for Patreon Plugins
         MaterialProperty _LeftRightPan = null;
         MaterialProperty _UpDownPan = null;
@@ -127,6 +135,8 @@ public class XSToonInspector : ShaderGUI
     bool isEyeTracking = false;
     bool isOutlined = false;
     bool isCutout = false;
+    bool isRave = false;
+    bool isSparkle = false;
 
     public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
     {
@@ -137,6 +147,8 @@ public class XSToonInspector : ShaderGUI
         isOutlined = shader.name.Contains("Outline");
         isPatreonShader = shader.name.Contains("Patreon");
         isEyeTracking = shader.name.Contains("EyeTracking");
+        isRave = shader.name.Contains("Rave");
+        isSparkle = shader.name.Contains("Sparkle");
 
 		//Find all material properties listed in the script using reflection, and set them using a loop only if they're of type MaterialProperty. 
 		//This makes things a lot nicer to maintain and cleaner to look at.
@@ -338,8 +350,21 @@ public class XSToonInspector : ShaderGUI
             showEmission = XSStyles.ShurikenFoldout("Emission", showEmission);
             if (showEmission)
             {
-                materialEditor.TexturePropertySingleLine(new GUIContent("Emission Map", "Emissive map. White to black, unless you want multiple colors."), _EmissionMap, _EmissionColor);
+                materialEditor.TexturePropertySingleLine(new GUIContent("Emission Scroll Texture", "Emissive coloring. White to black, unless you want multiple colors."), _EmissionMap, _EmissionColor);
                 materialEditor.TextureScaleOffsetProperty(_EmissionMap);
+                
+                if (isRave) {
+                    materialEditor.TexturePropertySingleLine(new GUIContent("Emission Map", "Emissive Map"), _EmissionScaleTex);
+                    materialEditor.VectorProperty(_EmissionSpeed, "Scroll Speed");
+                }
+
+                if (isSparkle) {
+                    materialEditor.FloatProperty(_EmissionNoiseSizeCoeff, "Noise Size Coeff");
+                    materialEditor.FloatProperty(_EmissionNoiseDensity, "Noise Density");
+                    materialEditor.FloatProperty(_EmissionSparkleSpeed, "Sparkle Speed");
+                    materialEditor.FloatProperty(_EmissionGreyShift, "Grey Shift");
+                }
+
                 materialEditor.ShaderProperty(_UVSetEmission, new GUIContent("UV Set", "The UV set to use for the Emission Map"), 2);
                 materialEditor.ShaderProperty(_EmissionToDiffuse, new GUIContent("Tint To Diffuse", "Tints the emission to the Diffuse Color"), 2);
 
